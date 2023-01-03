@@ -10,6 +10,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 
 fun Application.configure() {
@@ -27,7 +28,9 @@ fun Application.configure() {
     }
 
     install(StatusPages) {
+        val logger = LoggerFactory.getLogger("ErrorHandler")
         exception<IllegalArgumentException> { call, cause ->
+            logger.error("", cause)
             call.respond(
                 HttpStatusCode.BadRequest, mapOf(
                     "error" to "ILLEGAL_ARGUMENT",
@@ -36,6 +39,7 @@ fun Application.configure() {
             )
         }
         exception<Exception> { call, cause ->
+            logger.error("", cause)
             call.respond(
                 HttpStatusCode.InternalServerError, mapOf(
                     "error" to "INTERNAL_SERVER_ERROR",

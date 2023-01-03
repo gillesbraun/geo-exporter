@@ -1,7 +1,10 @@
-import {Button, Form, FormGroup, Input, ListGroup, ListGroupItem} from "reactstrap";
+import {Alert, Button, Form, FormGroup, Input, ListGroup, ListGroupItem} from "reactstrap";
 import {useState} from "react";
 import {axios} from "./index";
 import {Polygon} from "ol/geom";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {library} from "@fortawesome/fontawesome-svg-core";
+import {faSpinner} from "@fortawesome/free-solid-svg-icons";
 
 export interface SearchWidgetProps {
     onSelected: (poly: OsmPoly | null) => void
@@ -20,6 +23,7 @@ const SearchWidget = (props: SearchWidgetProps) => {
     const [searchString, setSearchString] = useState("")
     const [items, setItems] = useState<OsmPoly[]>([])
 
+    library.add(faSpinner)
     const doSearch = () => {
         setLoading(true)
         setItems([])
@@ -74,25 +78,38 @@ const SearchWidget = (props: SearchWidgetProps) => {
 
         <h4>Search results for: {searchString}</h4>
 
-        <ListGroup>
-            {items.map(poly => (
-                <ListGroupItem
-                    key={"poly-" + poly.id + "-" + poly.adminLevel}
-                >
-                    <a onClick={e => select(poly)} style={{cursor: "pointer"}}>
-                        {poly.name}, adminLevel: {poly.adminLevel}
-                    </a>
-                    <div className="float-end">
-                        <a href={`/polygons/export/${poly.id}/kml`} className={"btn btn-info btn-sm text-white me-1"}>
-                            KML
+        <div style={{
+            overflowY: "auto",
+            height: "100%"
+        }}>
+
+            {loading && <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+                <FontAwesomeIcon icon={"spinner"} spin size={"2xl"} />
+            </div>}
+
+            {!loading && items.length == 0 && searchString.length > 0 && <Alert color={"warning"}>No results found for {searchString}</Alert>}
+
+            <ListGroup>
+                {items.map(poly => (
+                    <ListGroupItem
+                        key={"poly-" + poly.id + "-" + poly.adminLevel}
+                    >
+                        <a onClick={e => select(poly)} style={{cursor: "pointer"}}>
+                            {poly.name}, adminLevel: {poly.adminLevel}
                         </a>
-                        <a href={`/polygons/export/${poly.id}/geojson`} className={"btn btn-info btn-sm text-white"}>
-                            GeoJSON
-                        </a>
-                    </div>
-                </ListGroupItem>
-            ))}
-        </ListGroup>
+                        <div className="float-end">
+                            <a href={`/polygons/export/${poly.id}/kml`} className={"btn btn-info btn-sm text-white me-1"}>
+                                KML
+                            </a>
+                            <a href={`/polygons/export/${poly.id}/geojson`} className={"btn btn-info btn-sm text-white"}>
+                                GeoJSON
+                            </a>
+                        </div>
+                    </ListGroupItem>
+                ))}
+            </ListGroup>
+
+        </div>
     </>
 }
 

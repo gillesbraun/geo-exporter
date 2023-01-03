@@ -8,7 +8,11 @@ function App() {
   return (
     <Container fluid>
         <Row>
-            <Col lg="6">
+            <Col lg="6" style={{
+                display: "flex",
+                height: "100vh",
+                flexDirection: "column"
+            }}>
                 <h3>Geo Export</h3>
                 <SearchWidget
                     onSelected={setPoly}

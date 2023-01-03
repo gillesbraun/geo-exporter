@@ -1,7 +1,6 @@
 package lu.gbraun.geo_exporter.controllers
 
 import lu.gbraun.geo_exporter.entities.OsmPolygon
-import lu.gbraun.geo_exporter.mappers.RegionMapper
 import io.ebean.DB
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -9,7 +8,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import lu.gbraun.geo_exporter.dto.OsmPolygonDto
 import lu.gbraun.geo_exporter.entities.query.QOsmPolygon
+import lu.gbraun.geo_exporter.mappers.RegionMapper
+import org.slf4j.LoggerFactory
 
 fun Route.polygonRoutes() {
     get("/polygons/search/{search}") {
@@ -35,7 +37,9 @@ private suspend fun findPolygonsByName(search: String): MutableList<OsmPolygon> 
             .boundary.eq("administrative")
             .and()
             .raw("lower(name) like ?", "%$search%".lowercase())
-            .orderBy().adminLevel.desc()
+            .orderBy()
+            .wayArea.desc()
+            .adminLevel.asc()
             .setMaxRows(25)
             .findList()
     }

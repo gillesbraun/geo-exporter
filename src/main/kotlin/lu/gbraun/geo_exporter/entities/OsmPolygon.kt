@@ -12,22 +12,27 @@ import javax.persistence.Table
 class OsmPolygon : Model() {
     @Id
     @Column(name = "osm_id")
-    var id: Int? = null
+    var id: Long? = null
     var name: String? = null
     var adminLevel: Int? = null
-    var way: Polygon? = null
     var boundary: String? = null
+    var wayArea: Double? = null
+    var way: Polygon? = null
 
 /*
     var access: String? = null
     @Column(name = "addr:housename")
     var addrHousename: String? = null
 
-    @Column(name = "addr:housenumber")
-    var addrHousenumber: String? = null
-
-    @Column(name = "addr:interpolation")
-    var addrInterpolation: String? = null
+//    var access: String? = null
+//    @Column(name = "addr:housename")
+//    var addrHousename: String? = null
+//
+//    @Column(name = "addr:housenumber")
+//    var addrHousenumber: String? = null
+//
+//    @Column(name = "addr:interpolation")
+//    var addrInterpolation: String? = null
 
 
     var aerialway: String? = null
@@ -48,8 +53,8 @@ class OsmPolygon : Model() {
     var embankment: String? = null
     var foot: String? = null
 
-    @Column(name = "generator:source")
-    var generatorSource: String? = null
+//    @Column(name = "generator:source")
+//    var generatorSource: String? = null
 
     var harbour: String? = null
     var highway: String? = null
@@ -84,8 +89,8 @@ class OsmPolygon : Model() {
     var toll: String? = null
     var tourism: String? = null
 
-    @Column(name = "tower:type")
-    var towerType: String? = null
+//    @Column(name = "tower:type")
+//    var towerType: String? = null
 
 
     var tracktype: String? = null
@@ -96,6 +101,5 @@ class OsmPolygon : Model() {
     var width: String? = null
     var wood: String? = null
     var zOrder: Int? = null
-    var wayArea: Int? = null
  */
 }

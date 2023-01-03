@@ -10,10 +10,11 @@ lateinit var dbConn: Connection
 
 fun connect() {
     val host = System.getenv("DB_HOST")
+    val port = System.getenv("DB_PORT") ?: "5432"
     val dbName = System.getenv("DB_DATABASE")
     val user = System.getenv("DB_USER")
     val password = System.getenv("DB_PASSWORD")
-    val url = "jdbc:postgresql://$host/$dbName"
+    val url = "jdbc:postgresql://$host:$port/$dbName"
     dbConn = DriverManager.getConnection(url, user, password)
 
     val dataSourceConfig = DataSourceConfig()
