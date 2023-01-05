@@ -1,0 +1,17 @@
+stages:
+  - build
+
+variables:
+  CI_IMAGE: $CI_REGISTRY_IMAGE/geo-exporter
+
+build_ci_image:
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  stage: build
+  image: docker:latest
+  only:
+    - tags
+  script:
+    - docker build -t $CI_IMAGE:$CI_COMMIT_TAG -t $CI_IMAGE:latest .
+    - docker push $CI_IMAGE:$CI_COMMIT_TAG && docker push $CI_IMAGE:latest
+
