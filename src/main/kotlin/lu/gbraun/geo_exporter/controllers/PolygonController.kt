@@ -12,6 +12,7 @@ import lu.gbraun.geo_exporter.dto.OsmPolygonDto
 import lu.gbraun.geo_exporter.entities.query.QOsmPolygon
 import lu.gbraun.geo_exporter.mappers.RegionMapper
 import org.slf4j.LoggerFactory
+import kotlin.math.log
 
 fun Route.polygonRoutes() {
     get("/polygons/search/{search}") {
@@ -33,15 +34,18 @@ fun Route.polygonRoutes() {
 
 private suspend fun findPolygonsByName(search: String): MutableList<OsmPolygon> {
     return withContext(Dispatchers.IO) {
-        QOsmPolygon()
-            .boundary.eq("administrative")
-            .and()
+        val query = QOsmPolygon()
+            .or()
             .raw("lower(name) like ?", "%$search%".lowercase())
+            .raw("lower(\"name:en\") like ?", "%$search%".lowercase())
+            .endOr()
             .orderBy()
             .wayArea.desc()
             .adminLevel.asc()
             .setMaxRows(25)
-            .findList()
+        val results = query.findList()
+        //LoggerFactory.getLogger("").info("query: {}", query.generatedSql)
+        results
     }
 }
 
@@ -70,9 +74,11 @@ private suspend fun exportPolygon(id: Int, format: String): ExportedPolygon {
             <?xml version="1.0" encoding="UTF-8"?>
             <kml xmlns="http://earth.google.com/kml/2.1">
             <Document>
+              <name>${row.getString("name")}</name>
               <Style id="0">    
               </Style> 
                 <Placemark>
+                <name>${row.getString("name")}</name>
                 $export
                 </Placemark>
             </Document>

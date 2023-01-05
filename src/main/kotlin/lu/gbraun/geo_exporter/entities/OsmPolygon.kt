@@ -11,7 +11,6 @@ import javax.persistence.Table
 @Table(name = "planet_osm_polygon")
 class OsmPolygon : Model() {
     @Id
-    @Column(name = "osm_id")
     var id: Long? = null
     var name: String? = null
     var adminLevel: Int? = null
