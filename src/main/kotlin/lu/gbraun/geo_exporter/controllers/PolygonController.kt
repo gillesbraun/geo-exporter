@@ -36,8 +36,8 @@ private suspend fun findPolygonsByName(search: String): MutableList<OsmPolygon> 
     return withContext(Dispatchers.IO) {
         val query = QOsmPolygon()
             .or()
-            .raw("lower(name) like ?", "%$search%".lowercase())
-            .raw("lower(\"name:en\") like ?", "%$search%".lowercase())
+            .raw("lower(name) like ?", "$search%".lowercase())
+            .raw("lower(\"name:en\") like ?", "$search%".lowercase())
             .endOr()
             .orderBy()
             .wayArea.desc()
