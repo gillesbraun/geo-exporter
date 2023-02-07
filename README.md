@@ -107,10 +107,11 @@ planet_areas.osm.pbf
 Also adds an ID column because osm_id are not unique, 
 
 ```shell
+psql -h 127.0.0.1 -U username -c "CREATE EXTENSION pg_trgm;" osm &
 psql -h 127.0.0.1 -U username -c "CREATE INDEX planet_osm_polygon_admin_level_idx on planet_osm_polygon USING btree (admin_level)" osm &
 psql -h 127.0.0.1 -U username -c "CREATE INDEX planet_osm_polygon_boundary_idx on planet_osm_polygon USING btree (boundary)" osm &
-psql -h 127.0.0.1 -U username -c "CREATE INDEX planet_osm_polygon_name_lower_idx on planet_osm_polygon USING btree (lower(name) varchar_pattern_ops)" osm &
-psql -h 127.0.0.1 -U username -c "CREATE INDEX planet_osm_polygon_name_en_lower_idx on planet_osm_polygon USING btree (lower(\"name:en\") varchar_pattern_ops)" osm &
+psql -h 127.0.0.1 -U username -c "CREATE INDEX planet_osm_polygon_name_lower_idx on planet_osm_polygon USING gin (lower(name) gin_trgm_ops)" osm &
+psql -h 127.0.0.1 -U username -c "CREATE INDEX planet_osm_polygon_name_en_lower_idx on planet_osm_polygon USING gin (lower(\"name:en\") gin_trgm_ops)" osm &
 psql -h 127.0.0.1 -U username -c "CREATE INDEX planet_osm_polygon_osm_id_idx on planet_osm_polygon USING btree (osm_id)" osm &
 psql -h 127.0.0.1 -U username -c "ALTER TABLE planet_osm_polygon ADD COLUMN id SERIAL PRIMARY KEY;" osm \
   && psql -h 127.0.0.1 -U username -c "CREATE UNIQUE INDEX planet_osm_polygon_id_unique_idx on planet_osm_polygon USING btree (id)" osm &
