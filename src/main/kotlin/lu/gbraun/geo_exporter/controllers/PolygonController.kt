@@ -62,7 +62,7 @@ private suspend fun exportPolygon(id: Int, format: String): ExportedPolygon {
         else -> throw IllegalArgumentException("cant export $format")
     }
     val row = withContext(Dispatchers.IO) {
-        DB.sqlQuery("SELECT $select as export, name, admin_level FROM planet_osm_polygon WHERE osm_id = ? LIMIT 1")
+        DB.sqlQuery("SELECT $select as export, name, admin_level FROM planet_osm_polygon WHERE id = ? LIMIT 1")
             .setParameter(id)
             .findOneOrEmpty()
             .orElseThrow { IllegalArgumentException("Polygon not found in the database") }
