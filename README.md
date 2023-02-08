@@ -31,10 +31,7 @@ docker run --rm -it \
 ### install requirements
 
 ```shell
-sudo apt-get install -y postgis postgresql make unzip cmake g++ \ 
-  libboost-dev libboost-system-dev libboost-filesystem-dev libexpat1-dev \ 
-  zlib1g-dev libbz2-dev libpq-dev libproj-dev lua5.3 liblua5.3-dev pandoc \ 
-  libluajit-5.1-dev osmium-tool
+apt-get install -y postgis postgresql make unzip cmake g++ libboost-dev libboost-system-dev libboost-filesystem-dev libexpat1-dev zlib1g-dev libbz2-dev libpq-dev libproj-dev lua5.3 liblua5.3-dev pandoc libluajit-5.1-dev osmium-tool
 ```
 ### compile osm2pgsql
 
@@ -46,7 +43,7 @@ mkdir build && cd build
 cmake -D WITH_LUAJIT=ON ..
 make
 make man
-sudo make install
+make install
 cd
 ```
 
@@ -66,7 +63,7 @@ max_wal_senders=0
 random_page_cost=1.0
 EOT
 
-echo "127.0.0.1:5432:osm:user:password" > .pgpass
+echo "127.0.0.1:5432:osm:username:password" > .pgpass
 
 sudo service postgresql restart
 
@@ -82,7 +79,9 @@ exit
 ### Filter planet down to only areas with admin_level
 
 ```shell
-time osmium tags-filter -o planet_areas_test.osm.pbf planet-latest.osm.pbf a/admin_level
+osmium tags-filter -o planet_areas.osm.pbf planet-latest.osm.pbf a/admin_level
+osmium tags-filter -o planet_bus_stops.osm.pbf planet-latest.osm.pbf n/highway=bus_stop
+osmium merge -o planet_bus_areas.pbf planet_bus_stops.pbf planet_areas.pbf
 ```
 
 ### Custom style for importing into osm2pgsql
@@ -90,16 +89,14 @@ time osmium tags-filter -o planet_areas_test.osm.pbf planet-latest.osm.pbf a/adm
 added coastline and `name:en`
 
 ```shell
-cp /usr/share/osm2pgsql/default.style custom.style
+cp /usr/local/share/osm2pgsql/default.style custom.style
 echo "node,way   name:en      text         linear" >> custom.style
 ```
 
 ### run osm2pgsql (in screen or tmux)
 
 ```shell
-time osm2pgsql --cache 150000 -d osm -U username -H 127.0.0.1 \
---keep-coastlines --latlong --style=custom.style \
-planet_areas.osm.pbf
+time osm2pgsql --cache 150000 -d osm -U username -H 127.0.0.1 --keep-coastlines --latlong --style=custom.style planet_bus_areas.pbf
 ```
 
 ### create indices on finished data
