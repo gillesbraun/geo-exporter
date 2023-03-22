@@ -29,6 +29,14 @@ class PostgisToGeojsonMapper {
         return polygonJson
     }
 
+    fun mapPostGisPointToGeoJson(point: Point): org.geojson.Point {
+        return if (point.getZ() > 0) {
+            org.geojson.Point(point.getX(), point.getY(), point.getZ())
+        } else {
+            org.geojson.Point(point.getX(), point.getY())
+        }
+    }
+
     fun mapPostgisPointToLngLatAlt(point: Point): LngLatAlt {
         return if (point.getZ() > 0) {
             LngLatAlt(point.getX(), point.getY(), point.getZ())

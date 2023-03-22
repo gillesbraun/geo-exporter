@@ -8,11 +8,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import lu.gbraun.geo_exporter.dto.OsmPolygonDto
 import lu.gbraun.geo_exporter.entities.query.QOsmPolygon
 import lu.gbraun.geo_exporter.mappers.RegionMapper
-import org.slf4j.LoggerFactory
-import kotlin.math.log
 
 fun Route.polygonRoutes() {
     get("/polygons/search/{search}") {
