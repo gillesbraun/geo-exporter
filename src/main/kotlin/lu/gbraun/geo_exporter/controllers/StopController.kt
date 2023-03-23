@@ -10,8 +10,16 @@ import kotlinx.coroutines.withContext
 import lu.gbraun.geo_exporter.entities.OsmPoint
 import lu.gbraun.geo_exporter.mappers.PointMapper
 
-fun Route.stopRoutes() {
-    get("/stops/bus_stops/{region}") {
+fun Route.pointRoutes() {
+    get("/points/bus_stops") {
+        val region = requireNotNull(
+            call.request.queryParameters["region"]?.toIntOrNull()
+        )
+        val stops = getBusStopsInRegion(region)
+        val dtos = stops.map(PointMapper.INSTANCE::mapOsmPoint)
+        call.respond(dtos)
+    }
+    get("/points/bus_stops/{region}") {
         val region = requireNotNull(call.parameters["region"]?.toIntOrNull())
         val stops = getBusStopsInRegion(region)
         val dtos = stops.map(PointMapper.INSTANCE::mapOsmPoint)
@@ -33,7 +41,7 @@ private suspend fun getBusStopsInRegion(regionId: Int) = withContext(Dispatchers
         """.trimIndent()
     )
         .columnMapping("name", "name")
-        .columnMapping("way", "way")
+        .columnMapping("way", "point")
         .columnMapping("id", "id")
         .create()
 

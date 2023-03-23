@@ -6,7 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import lu.gbraun.geo_exporter.controllers.stopRoutes
+import lu.gbraun.geo_exporter.controllers.pointRoutes
 
 
 fun Application.configureRoutes() {
@@ -15,7 +15,7 @@ fun Application.configureRoutes() {
             call.respondRedirect("/index.html")
         }
         polygonRoutes()
-        stopRoutes()
+        pointRoutes()
         mapRoutes()
         static("/") {
             resources("static")

@@ -5,5 +5,5 @@ import org.geojson.Point
 data class OsmPointDto(
     var id: Long? = null,
     var name: String? = null,
-    var way: Point? = null,
+    var point: Point? = null,
 )

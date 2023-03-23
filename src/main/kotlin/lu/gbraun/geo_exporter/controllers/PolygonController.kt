@@ -12,8 +12,13 @@ import lu.gbraun.geo_exporter.entities.query.QOsmPolygon
 import lu.gbraun.geo_exporter.mappers.RegionMapper
 
 fun Route.polygonRoutes() {
-    get("/polygons/search/{search}") {
-        val search = call.parameters["search"] ?: ""
+    get("/polygons/search") {
+        val search = call.request.queryParameters["query"] ?: ""
+        val polygons = findPolygonsByName(search)
+        call.respond(polygons.map(RegionMapper.INSTANCE::mapOsmPoly))
+    }
+    get("/polygons/search/{query}") {
+        val search = call.parameters["query"] ?: ""
         val polygons = findPolygonsByName(search)
         call.respond(polygons.map(RegionMapper.INSTANCE::mapOsmPoly))
     }
@@ -30,6 +35,7 @@ fun Route.polygonRoutes() {
 }
 
 private suspend fun findPolygonsByName(search: String): MutableList<OsmPolygon> {
+    require(search.length >= 3) { "Search query needs to be at least 3 characters." }
     return withContext(Dispatchers.IO) {
         val query = QOsmPolygon()
             .or()
