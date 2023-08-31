@@ -14,12 +14,14 @@ import lu.gbraun.geo_exporter.mappers.RegionMapper
 fun Route.polygonRoutes() {
     get("/polygons/search") {
         val search = call.request.queryParameters["query"] ?: ""
-        val polygons = findPolygonsByName(search)
+        val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
+        val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull() ?: 25
+        val polygons = findPolygonsByName(search, page, pageSize)
         call.respond(polygons.map(RegionMapper.INSTANCE::mapOsmPoly))
     }
     get("/polygons/search/{query}") {
         val search = call.parameters["query"] ?: ""
-        val polygons = findPolygonsByName(search)
+        val polygons = findPolygonsByName(search, page = 1, pageSize = 25)
         call.respond(polygons.map(RegionMapper.INSTANCE::mapOsmPoly))
     }
     get("/polygons/export/{id}/{format}") {
@@ -34,7 +36,7 @@ fun Route.polygonRoutes() {
     }
 }
 
-private suspend fun findPolygonsByName(search: String): MutableList<OsmPolygon> {
+private suspend fun findPolygonsByName(search: String, page: Int, pageSize: Int): MutableList<OsmPolygon> {
     require(search.length >= 3) { "Search query needs to be at least 3 characters." }
     return withContext(Dispatchers.IO) {
         val query = QOsmPolygon()
@@ -45,7 +47,8 @@ private suspend fun findPolygonsByName(search: String): MutableList<OsmPolygon> 
             .orderBy()
             .wayArea.desc()
             .adminLevel.asc()
-            .setMaxRows(25)
+            .setMaxRows(pageSize)
+            .setFirstRow(pageSize * (page - 1))
         val results = query.findList()
         //LoggerFactory.getLogger("").info("query: {}", query.generatedSql)
         results
